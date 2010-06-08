@@ -28,6 +28,12 @@
             Console.WriteLine("DisplayModel Created: {0} ", (displayModel != null) ? "OK" : "ERROR");
             Console.WriteLine("EditModel Created: {0} ", (editModel != null) ? "OK" : "ERROR");
 
+            displayModel.GetType().GetProperty("Id").SetValue(displayModel, 10, null);
+            editModel.GetType().GetProperty("Id").SetValue(editModel, 10, null);
+
+            Console.WriteLine("DisplayModel ToString: {0} ", (displayModel.ToString().Equals("10")) ? "OK" : "ERROR");
+            Console.WriteLine("EditModel ToString: {0} ", (editModel.ToString().Equals("10")) ? "OK" : "ERROR");
+
             Console.Read();
         }
     }

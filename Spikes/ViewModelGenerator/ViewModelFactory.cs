@@ -10,7 +10,6 @@
     {
         private const string Name = "ViewModels";
         private const string AssemblyName = Name + "Assembly";
-        private const string ModuleName = Name + "Module";
 
         private const BindingFlags PropertyBindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.GetProperty;
         private const MethodAttributes PropertyMethodsAttributes = MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig;
@@ -26,8 +25,15 @@
         private static readonly Type typeConverterType = typeof(TypeConverterAttribute);
         private static readonly Type entityConverterType = typeof(EntityConverter);
 
+        private static readonly Type viewModelInterfaceType = typeof(IViewModel);
+
         private static readonly AssemblyBuilder assemblyBuilder = CreateAssemblyBuilder();
         private static readonly ModuleBuilder moduleBuilder = CreateModuleBuilder();
+
+        public void Save()
+        {
+            assemblyBuilder.Save(assemblyBuilder.GetName().Name + ".dll", PortableExecutableKinds.ILOnly, ImageFileMachine.I386);
+        }
 
         public Type CreateDisplayModel(Type modelType)
         {
@@ -47,11 +53,12 @@
         {
             string typeName = CreateTypeName(modelType, suffix);
 
-            TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit | TypeAttributes.AutoLayout, objectType);
+            TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit, objectType, new[] { viewModelInterfaceType });
 
             ApplyEntityConverterAttribute(typeBuilder);
 
             typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
+            typeBuilder.AddInterfaceImplementation(viewModelInterfaceType);
 
             AddPremitiveTypeProperties(typeBuilder, modelType);
 
@@ -72,20 +79,23 @@
         {
             foreach (PropertyInfo property in modelType.GetProperties(PropertyBindingFlags).Where(p => IsKnownType(p.PropertyType)))
             {
-                FieldBuilder fieldBuilder = typeBuilder.DefineField("_" + property.Name, property.PropertyType, FieldAttributes.Private);
+                Type propertyType = property.PropertyType;
+                string propertyName = property.Name;
 
-                string getName = "get_" + property.Name;
+                FieldBuilder fieldBuilder = typeBuilder.DefineField("_" + propertyName, propertyType, FieldAttributes.PrivateScope | FieldAttributes.Private);
 
-                MethodBuilder getMethodBuilder = typeBuilder.DefineMethod(getName, PropertyMethodsAttributes, property.PropertyType, Type.EmptyTypes);
+                string getName = "get_" + propertyName;
+
+                MethodBuilder getMethodBuilder = typeBuilder.DefineMethod(getName, PropertyMethodsAttributes, propertyType, Type.EmptyTypes);
                 ILGenerator getMethodIL = getMethodBuilder.GetILGenerator();
 
                 getMethodIL.Emit(OpCodes.Ldarg_0);
                 getMethodIL.Emit(OpCodes.Ldfld, fieldBuilder);
                 getMethodIL.Emit(OpCodes.Ret);
 
-                string setName = "set_" + property.Name;
+                string setName = "set_" + propertyName;
 
-                MethodBuilder setMethodBuilder = typeBuilder.DefineMethod(setName, PropertyMethodsAttributes, null, new[] { property.PropertyType });
+                MethodBuilder setMethodBuilder = typeBuilder.DefineMethod(setName, PropertyMethodsAttributes, null, new[] { propertyType });
                 ILGenerator setMethodIL = setMethodBuilder.GetILGenerator();
 
                 setMethodIL.Emit(OpCodes.Ldarg_0);
@@ -93,10 +103,23 @@
                 setMethodIL.Emit(OpCodes.Stfld, fieldBuilder);
                 setMethodIL.Emit(OpCodes.Ret);
 
-                PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(property.Name, PropertyAttributes.HasDefault, property.PropertyType, new[] { property.PropertyType });
+                PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.None, propertyType, new[] { propertyType });
 
                 propertyBuilder.SetGetMethod(getMethodBuilder);
                 propertyBuilder.SetSetMethod(setMethodBuilder);
+
+                if (propertyName.Equals("Id"))
+                {
+                    MethodInfo convertMethod = typeof(Convert).GetMethods().First(m => m.Name.Equals("ToString") && m.GetParameters()[0].ParameterType.Equals(propertyType));
+
+                    MethodBuilder methodBuilder = typeBuilder.DefineMethod("ToString", MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.HideBySig, CallingConventions.Standard, stringType, Type.EmptyTypes);
+                    ILGenerator methodIL = methodBuilder.GetILGenerator();
+
+                    methodIL.Emit(OpCodes.Ldarg_0);
+                    methodIL.Emit(OpCodes.Ldfld, fieldBuilder);
+                    methodIL.Emit(OpCodes.Call, convertMethod);
+                    methodIL.Emit(OpCodes.Ret);
+                }
             }
         }
 
@@ -114,7 +137,7 @@
 
         private static ModuleBuilder CreateModuleBuilder()
         {
-            ModuleBuilder builder = assemblyBuilder.DefineDynamicModule(ModuleName);
+            ModuleBuilder builder = assemblyBuilder.DefineDynamicModule(assemblyBuilder.GetName().Name, AssemblyName + ".dll");
 
             return builder;
         }
@@ -126,7 +149,7 @@
                                                 Version = typeof(ViewModelFactory).Assembly.GetName().Version
                                             };
 
-            AssemblyBuilder builder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+            AssemblyBuilder builder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
 
             return builder;
         }
