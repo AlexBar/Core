@@ -8,6 +8,7 @@
 namespace MvcExtensions.Windsor.Tests
 {
     using System;
+    using System.Web.Mvc;
 
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
@@ -74,21 +75,21 @@ namespace MvcExtensions.Windsor.Tests
         }
 
         [Fact]
-        public void Should_be_able_to_get_instance_by_type()
+        public void Should_be_able_to_get_service_by_type()
         {
             container.Setup(c => c.Resolve(It.IsAny<Type>()));
 
-            adapter.GetInstance<DummyObject>();
+            adapter.GetService<DummyObject>();
 
             container.VerifyAll();
         }
 
         [Fact]
-        public void Should_be_able_to_get_instance_by_type_and_key()
+        public void Should_be_able_to_get_service_by_type_and_key()
         {
             container.Setup(c => c.Resolve(It.IsAny<Type>(), It.IsAny<string>()));
 
-            adapter.GetInstance<DummyObject>("foo");
+            adapter.GetService<DummyObject>("foo");
 
             container.VerifyAll();
         }
@@ -98,7 +99,7 @@ namespace MvcExtensions.Windsor.Tests
         {
             container.Setup(c => c.ResolveAll(It.IsAny<Type>())).Returns(new DummyObject[] { });
 
-            adapter.GetAllInstances(typeof(DummyObject));
+            adapter.GetServices(typeof(DummyObject));
 
             container.VerifyAll();
         }
