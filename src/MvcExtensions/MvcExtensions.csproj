@@ -131,6 +131,7 @@
     <Compile Include="ExtensionMethod\RouteExtensions.cs" />
     <Compile Include="Flash\FlashHtmlExtensions.cs" />
     <Compile Include="Flash\FlashStorage.cs" />
+    <Compile Include="Helper\ExpressionUtil.cs" />
     <Compile Include="Helper\KnownActionNames.cs" />
     <Compile Include="Helper\KnownMimeTypes.cs" />
     <Compile Include="Helper\RouteValuesHelpers.cs" />
@@ -139,6 +140,11 @@
     <Compile Include="ModelMetadata\IModelMetadataRegistrar.cs" />
     <Compile Include="ModelMetadata\ModelMetadataItemBuilderRenderActionExtensions.cs" />
     <Compile Include="ModelMetadata\ModelMetadataRegistrar.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\AbstractRemoteValidationConfigurator.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\IRemoteValidationConfigurator.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationConfigurator.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationExtensions.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationMetadata.cs" />
     <Compile Include="ModelMetadata\RenderActionSettingExtensions.cs" />
     <Compile Include="ModelMetadata\CompareValidationMetadata.cs" />
     <Compile Include="ModelMetadata\CustomValidationMetadata.cs" />
@@ -281,6 +287,7 @@
       <Link>MvcExtensions.snk</Link>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\build\nuget\NuGet.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

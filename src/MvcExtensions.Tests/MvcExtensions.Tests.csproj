@@ -131,6 +131,8 @@
     <Compile Include="ModelMetadata\ObjectMetadataItemBuilderTests.cs" />
     <Compile Include="ModelMetadata\RangeValidationMetadataTests.cs" />
     <Compile Include="ModelMetadata\RegularExpressionValidationMetadataTests.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\RemoteModelMetadataItemBuilderTests.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationMetadataTests.cs" />
     <Compile Include="ModelMetadata\RequiredValidationMetadataTests.cs" />
     <Compile Include="ModelMetadata\StringLengthValidationMetadataTests.cs" />
     <Compile Include="ModelMetadata\StringMetadataItemBuilderTests.cs" />
