@@ -31,6 +31,25 @@ namespace MvcExtensions.Tests
         }
 
         [Fact]
+        public void Should_be_able_to_set_remote_with_http_method()
+        {
+            const string httpMethod = "POST";
+            builder.Remote(c => c.HttpMethod(httpMethod).For<DummyController>(x => x.CheckUsername1));
+
+            var metadata = (RemoteValidationMetadata)item.Validations.First();
+            Assert.Equal(metadata.HttpMethod, httpMethod);
+        }
+
+        [Fact]
+        public void Should_not_be_http_method_if_no_any_other_params_are_set()
+        {
+            const string httpMethod = "POST";
+            builder.Remote(c => c.HttpMethod(httpMethod));
+
+            Assert.Equal(0, item.Validations.Count);
+        }
+
+        [Fact]
         public void Should_be_able_to_set_remote_for_action()
         {
             builder.Remote(c => c.For<DummyController>(x => x.CheckUsername1));
@@ -45,41 +64,97 @@ namespace MvcExtensions.Tests
         [Fact]
         public void Should_be_able_to_set_remote_for_action_with_area()
         {
-            builder.Remote(c => c.For<DummyController>(x => x.CheckUsername1, "area"));
+            const string areaName = "area";
+            builder.Remote(c => c.For<DummyController>(x => x.CheckUsername1, areaName));
 
             var metadata = (RemoteValidationMetadata)item.Validations.First();
 
             Assert.Equal("Dummy", metadata.Controller);
             Assert.Equal("CheckUsername1", metadata.Action);
-            Assert.Equal("area", metadata.Area);
+            Assert.Equal(areaName, metadata.Area);
         }
 
         [Fact]
-        public void Should_be_able_to_set_remote_for_action_with_area_and_additional_fields()
+        public void Should_be_able_to_set_remote_for_controller_action_as_strings()
         {
-            builder.Remote(c => c.For<DummyController>(x => x.CheckUsername1, null, new [] { "Id" } ));
+            const string controller = "controller1";
+            const string action = "action1";
+            builder.Remote(c => c.For(controller, action));
 
             var metadata = (RemoteValidationMetadata)item.Validations.First();
 
-            Assert.Equal("Dummy", metadata.Controller);
-            Assert.Equal("CheckUsername1", metadata.Action);
-            Assert.Equal("Id", metadata.AdditionalFields);
+            Assert.Equal(controller, metadata.Controller);
+            Assert.Equal(action, metadata.Action);
+            Assert.Equal(null, metadata.Area);
         }
 
         [Fact]
-        public void Should_be_able_to_set_remote_for_action_with_area_and_two_additional_fields()
+        public void Should_be_able_to_set_remote_for_controller_action_area_as_strings()
         {
-            builder.Remote(c => c.For<DummyController>(x => x.CheckUsername1, null, new[] { "Id1", "Id2" }));
+            const string controller = "controller1";
+            const string action = "action1";
+            const string areaName = "area1";
+            builder.Remote(c => c.For(controller, action, areaName));
 
             var metadata = (RemoteValidationMetadata)item.Validations.First();
 
-            Assert.Equal("Id1,Id2", metadata.AdditionalFields);
+            Assert.Equal(controller, metadata.Controller);
+            Assert.Equal(action, metadata.Action);
+            Assert.Equal(areaName, metadata.Area);
+        }
+
+        [Fact]
+        public void Should_be_able_to_set_remote_for_controller_action_additional_fields_as_strings()
+        {
+            const string controller = "controller1";
+            const string action = "action1";
+            const string additionalFields = "Id";
+            builder.Remote(c => c.For(controller, action, new[]{additionalFields}));
+
+            var metadata = (RemoteValidationMetadata)item.Validations.First();
+
+            Assert.Equal(controller, metadata.Controller);
+            Assert.Equal(action, metadata.Action);
+            Assert.Equal(null, metadata.Area);
+            Assert.Equal(additionalFields, metadata.AdditionalFields);
+        }
+
+        [Fact]
+        public void Should_be_able_to_set_remote_for_controller_action_with_two_additional_fields_as_strings()
+        {
+            const string controller = "controller1";
+            const string action = "action1";
+            const string additionalField1 = "Id";
+            const string additionalField2 = "Id2";
+            builder.Remote(c => c.For(controller, action, new[] { additionalField1, additionalField2 }));
+
+            var metadata = (RemoteValidationMetadata)item.Validations.First();
+
+            Assert.Equal(string.Format("{0},{1}", additionalField1, additionalField2), metadata.AdditionalFields);
+        }
+
+        [Fact]
+        public void Should_be_able_to_set_remote_for_controller_action_area_additional_fields_as_strings()
+        {
+            const string controller = "controller1";
+            const string action = "action1";
+            const string additionalFields = "Id";
+            const string areaName = "area1";
+            builder.Remote(c => c.For(controller, action, areaName, new[] { additionalFields }));
+
+            var metadata = (RemoteValidationMetadata)item.Validations.First();
+
+            Assert.Equal(controller, metadata.Controller);
+            Assert.Equal(action, metadata.Action);
+            Assert.Equal(areaName, metadata.Area);
+            Assert.Equal(additionalFields, metadata.AdditionalFields);
         }
 
         [Fact]
         public void Should_be_able_to_set_remote_for_action_with_area_and_additional_fields_as_expression()
         {
-            builder.Remote(c => c.With<TestModel>().For<DummyController>(x => x.CheckUsername2, m => m.Id));
+            builder.Remote(c => c.With<TestViewModel>()
+                                    .For<DummyController>(x => x.CheckUsername2, m => m.Id));
 
             var metadata = (RemoteValidationMetadata)item.Validations.First();
 
@@ -91,7 +166,7 @@ namespace MvcExtensions.Tests
         [Fact]
         public void Should_be_able_to_set_remote_for_action_with_area_and_two_additional_fields_as_expression()
         {
-            builder.Remote(c => c.With<TestModel>().For<DummyController>(x => x.CheckUsername2, m => m.Id, m => m.Id2));
+            builder.Remote(c => c.With<TestViewModel>().For<DummyController>(x => x.CheckUsername2, m => m.Id, m => m.Id2));
 
             var metadata = (RemoteValidationMetadata)item.Validations.First();
 
@@ -103,51 +178,21 @@ namespace MvcExtensions.Tests
 
         // test classes
 
-        public class TestModel
+        public class TestViewModel
         {
-            public int Id
-            {
-                get;
-                set;
-            }
-
-            public string Name
-            {
-                get;
-                set;
-            }
-
-            public int Id2
-            {
-                get;
-                set;
-            }
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int Id2 { get; set; }
+            public int Id3 { get; set; }
         }
-
-        /*public class Test : ModelMetadataConfiguration<TestModel>
-        {
-            public Test()
-            {
-                Configure(x => x.Name).Remote(r => r.For<DummyController>(c => c.CheckUsername1)).Required();
-                Configure(x => x.Name).Remote(r => r.With<TestModel>().For<DummyController>(c => c.CheckUsername2, m => m.Id)).Required();
-                Configure(x => x.Name).Remote(r => r.For("Dummy", "CheckUsername1")).Required();
-                Configure(x => x.Name).Remote(r => r.For("routeName")).Required();
-                Configure(x => x.Name).Remote(r =>
-                {
-                    //r.HttpMethod()
-                    AbstractRemoteValidationConfigurator<string> core = r.For("asd");
-                    return core;
-                }).Required();
-            }
-        }*/
-
+        
         /// <summary>
         /// DummyController for tests
         /// </summary>
         public class DummyController : Controller
         {
             /// <summary>
-            /// 
+            /// CheckUsername1 test method
             /// </summary>
             /// <param name="name"></param>
             /// <returns></returns>
@@ -157,11 +202,11 @@ namespace MvcExtensions.Tests
             }
 
             /// <summary>
-            /// 
+            /// CheckUsername2 test method
             /// </summary>
             /// <param name="name"></param>
             /// <returns></returns>
-            public JsonResult CheckUsername2(TestModel name)
+            public JsonResult CheckUsername2(TestViewModel name)
             {
                 return Json(true, JsonRequestBehavior.AllowGet);
             }

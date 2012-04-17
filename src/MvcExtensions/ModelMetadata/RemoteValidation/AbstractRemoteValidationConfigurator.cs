@@ -18,12 +18,5 @@ namespace MvcExtensions
             get;
             set;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="httpMethod"></param>
-        /// <returns></returns>
-        public abstract RemoteValidationConfigurator<TValue> HttpMethod(string httpMethod);
     }
 }

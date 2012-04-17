@@ -43,11 +43,11 @@ namespace MvcExtensions
         /// <summary>
         /// HttpMethod. The Default one of GET
         /// </summary>
-        /// <param name="httpMethod"></param>
+        /// <param name="method">Http method, e.g., Get, Post</param>
         /// <returns></returns>
-        public override RemoteValidationConfigurator<TValue> HttpMethod(string httpMethod)
+        public RemoteValidationConfigurator<TValue> HttpMethod(string method)
         {
-            this.httpMethod = httpMethod;
+            httpMethod = method;
             return this;
         }
 
@@ -75,25 +75,10 @@ namespace MvcExtensions
         public AbstractRemoteValidationConfigurator<TValue> For<TController>(Expression<Func<TController, Func<TValue, JsonResult>>> action, string areaName)
             where TController : IController
         {
-            CreateRemoteValidation(action, areaName, null);
+            CreateRemoteValidation(action, areaName, null, Enumerable.Empty<string>());
             return this;
         }
 
-        /// <summary>
-        /// Register Remote validator for the controller and specified action
-        /// </summary>
-        /// <param name="action">Action to call by validator</param>
-        /// <param name="areaName">The name of area</param>
-        /// <param name="additionalFields">The additional fields</param>
-        /// <typeparam name="TController">Target controller to find the action</typeparam>
-        /// <returns><see cref="AbstractRemoteValidationConfigurator{TValue}"/></returns>
-        public AbstractRemoteValidationConfigurator<TValue> For<TController>(Expression<Func<TController, Func<TValue, JsonResult>>> action,
-                                                                             string areaName, IEnumerable<string> additionalFields)
-            where TController : IController
-        {
-            CreateRemoteValidation(action, areaName, null, additionalFields);
-            return this;
-        }
 
         /// <summary>
         /// Register Remote validator by the controller name and action name
@@ -170,16 +155,16 @@ namespace MvcExtensions
         /// <summary>
         /// Specifies the type of model to retrive additional fields (usually needs to use the model you configure metadata for)
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
+        /// <typeparam name="TModel">The Current view model</typeparam>
         /// <returns></returns>
-        public ModelRemoteConfigurator<TModel> With<TModel>() where TModel : class
+        public ModelRemoteConfigurator<TModel> With<TModel>() where TModel : class 
         {
             return new ModelRemoteConfigurator<TModel>(this);
         }
 
-        private void CreateRemoteValidation<TController, TParam>(Expression<Func<TController, Func<TParam, JsonResult>>> action,
+        private void CreateRemoteValidation<TController, TModel, TParam>(Expression<Func<TController, Func<TParam, JsonResult>>> action,
                                                                    string areaName, string routeName,
-                                                                   params Expression<Func<TParam, object>>[] additionalFields)
+                                                                   params Expression<Func<TModel, object>>[] additionalFields)
             where TController : IController
         {
             IEnumerable<string> fields = additionalFields.Select(f => new ExpressionUtil().GetFullPropertyName(f));
@@ -211,13 +196,12 @@ namespace MvcExtensions
             validation.ErrorMessageResourceType = errorMessageResourceType;
             validation.ErrorMessageResourceName = errorMessageResourceName;
         }
-
+        
         #region ModelRemoteSettings<TModel>
-
         /// <summary>
         /// Incapsulates some additional method to register remote validation
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
+        /// <typeparam name="TModel">The type of current model</typeparam>
         public class ModelRemoteConfigurator<TModel>
         {
             private readonly RemoteValidationConfigurator<TValue> value;
@@ -228,29 +212,14 @@ namespace MvcExtensions
             }
 
             /// <summary>
-            /// 
+            /// Register Remote validator for the controller and specified action
             /// </summary>
-            /// <param name="action"></param>
-            /// <param name="additionalFields"></param>
-            /// <typeparam name="TController"></typeparam>
-            /// <returns></returns>
+            /// <param name="action">Action to call by validator</param>
+            /// <param name="additionalFields"> The additional fields</param>
+            /// <typeparam name="TController">Target controller to find the action</typeparam>
+            /// <returns><see cref="AbstractRemoteValidationConfigurator{TValue}"/></returns>
             public AbstractRemoteValidationConfigurator<TValue> For<TController>(Expression<Func<TController, Func<TModel, JsonResult>>> action,
                                                                        params Expression<Func<TModel, object>>[] additionalFields)
-                where TController : IController
-            {
-                value.CreateRemoteValidation(action, null, null, additionalFields);
-                return value;
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="action"></param>
-            /// <param name="additionalFields"></param>
-            /// <typeparam name="TController"></typeparam>
-            /// <returns></returns>
-            public AbstractRemoteValidationConfigurator<TValue> For<TController>(Expression<Func<TController, Func<TModel, JsonResult>>> action,
-                                                                       IEnumerable<string> additionalFields)
                 where TController : IController
             {
                 value.CreateRemoteValidation(action, null, null, additionalFields);

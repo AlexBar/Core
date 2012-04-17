@@ -142,7 +142,7 @@
     <Compile Include="ModelMetadata\ModelMetadataRegistrar.cs" />
     <Compile Include="ModelMetadata\RemoteValidation\AbstractRemoteValidationConfigurator.cs" />
     <Compile Include="ModelMetadata\RemoteValidation\IRemoteValidationConfigurator.cs" />
-    <Compile Include="ModelMetadata\RemoteValidation\RemoteValidation.cs" />
+    <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationConfigurator.cs" />
     <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationExtensions.cs" />
     <Compile Include="ModelMetadata\RemoteValidation\RemoteValidationMetadata.cs" />
     <Compile Include="ModelMetadata\RenderActionSettingExtensions.cs" />
