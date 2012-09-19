@@ -33,7 +33,7 @@ namespace MvcExtensions
                 // if user sets attribute, enable convensions by default
                 if (value != null)
                 {
-                    ConventionsActive = true;
+                    EnableConventions = true;
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace MvcExtensions
         /// <summary>
         /// MetadataConventionsEnabled
         /// </summary>
-        public static bool ConventionsActive { get; set; }
+        public static bool EnableConventions { get; set; }
 
         /// <summary>
         /// If true, will require attribute per type or containing assembly. 
@@ -53,7 +53,7 @@ namespace MvcExtensions
         /// </summary>
         internal static Type GetDefaultResourceType(Type containerType)
         {
-            if (!ConventionsActive)
+            if (!EnableConventions)
             {
                 return null;
             }

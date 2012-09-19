@@ -50,7 +50,7 @@ namespace MvcExtensions.FluentMetadata.Demo.Web
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);         
 
-            // ConventionSettings.ConventionsActive = true; - actomatically activated when DefaultResourceType is set
+            // ConventionSettings.EnableConventions = true; - actomatically activated when DefaultResourceType is set
             ConventionSettings.DefaultResourceType = typeof(Resources.LocalizedTexts);
             // you can require convension attribute to apply a convensions to the class
             // ConventionSettings.RequireConventionAttribute = false;

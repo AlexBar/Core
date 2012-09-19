@@ -15,7 +15,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         public ConventionSettingsTests()
         {
             ConventionSettings.DefaultResourceType = null;
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
             ConventionSettings.RequireConventionAttribute = false;
         }
 
@@ -23,34 +23,34 @@ namespace MvcExtensions.FluentMetadata.Tests
         public void Should_activate_convenstions_when_resourceType_is_set()
         {
             // arrange
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
 
             // act
             ConventionSettings.DefaultResourceType = typeof(TestResource);
             // assert
-            Assert.True(ConventionSettings.ConventionsActive);
+            Assert.True(ConventionSettings.EnableConventions);
         }
 
         [Fact]
         public void Should_not_deactivate_convenstions_when_resourceType_is_set_to_null()
         {
             // arrange
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             // act
             ConventionSettings.DefaultResourceType = null;
             // assert
-            Assert.True(ConventionSettings.ConventionsActive);
+            Assert.True(ConventionSettings.EnableConventions);
         }
 
         [Fact]
         public void Should_not_activate_convenstions_when_resourceType_is_set_to_null()
         {
             // arrange
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
             // act
             ConventionSettings.DefaultResourceType = null;
             // assert
-            Assert.False(ConventionSettings.ConventionsActive);
+            Assert.False(ConventionSettings.EnableConventions);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         {
             // arrange
             ConventionSettings.DefaultResourceType = typeof(TestResource);
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
             Type containerType = typeof(DummyContainer);
 
             // act
@@ -73,7 +73,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         {
             // arrange
             ConventionSettings.DefaultResourceType = typeof(TestResource);
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             Type containerType = typeof(DummyContainer);
 
             // act
@@ -89,7 +89,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         {
             // arrange
             ConventionSettings.DefaultResourceType = typeof(TestResource);
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             Type containerType = typeof(DummyContainerWithAttributeAndResourceType);
 
             // act
@@ -105,7 +105,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         {
             // arrange
             ConventionSettings.DefaultResourceType = typeof(TestResource);
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             Type containerType = typeof(DummyContainerWithEmptyAttribute);
 
             // act
@@ -121,7 +121,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         {
             // arrange
             ConventionSettings.DefaultResourceType = null;
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             Type containerType = typeof(DummyContainerWithEmptyAttribute);
 
             // act
@@ -136,7 +136,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         {
             // arrange
             ConventionSettings.DefaultResourceType = null;
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             ConventionSettings.RequireConventionAttribute = true;
             Type containerType = typeof(DummyContainerWithEmptyAttribute);
 
@@ -151,7 +151,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         public void Dispose()
         {
             ConventionSettings.DefaultResourceType = null;
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
             ConventionSettings.RequireConventionAttribute = false;
         }
 

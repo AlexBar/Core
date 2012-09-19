@@ -25,14 +25,14 @@ namespace MvcExtensions.FluentMetadata.Tests
 
             registry.RegisterModelProperties(metadataConfiguration.ModelType, metadataConfiguration.Configurations);
 
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             ConventionSettings.RequireConventionAttribute = false;
         }
 
         public void Dispose()
         {
             ConventionSettings.DefaultResourceType = null;
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
             ConventionSettings.RequireConventionAttribute = false;
         }
 

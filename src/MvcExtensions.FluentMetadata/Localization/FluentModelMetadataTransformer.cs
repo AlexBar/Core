@@ -30,7 +30,7 @@ namespace MvcExtensions
             Invariant.IsNotNull(metadata, "metadata");
 
             var containerType = metadata.ContainerType;
-            if (!ConventionSettings.ConventionsActive || containerType == null || string.IsNullOrEmpty(metadata.PropertyName))
+            if (!ConventionSettings.EnableConventions || containerType == null || string.IsNullOrEmpty(metadata.PropertyName))
             {
                 return;
             }

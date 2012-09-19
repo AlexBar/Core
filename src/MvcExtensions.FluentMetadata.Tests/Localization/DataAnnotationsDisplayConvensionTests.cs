@@ -17,7 +17,7 @@ namespace MvcExtensions.FluentMetadata.Tests
 
         public DataAnnotationsDisplayConvensionTests()
         {
-            ConventionSettings.ConventionsActive = true;
+            ConventionSettings.EnableConventions = true;
             ConventionSettings.RequireConventionAttribute = false;
             provider = new ConventionalDataAnnotationsModelMetadataProvider();
         }
@@ -25,7 +25,7 @@ namespace MvcExtensions.FluentMetadata.Tests
         public void Dispose()
         {
             ConventionSettings.DefaultResourceType = null;
-            ConventionSettings.ConventionsActive = false;
+            ConventionSettings.EnableConventions = false;
             ConventionSettings.RequireConventionAttribute = false;
         }
 

@@ -76,7 +76,7 @@ namespace MvcExtensions
                 validationAttribute.ErrorMessageResourceType = ErrorMessageResourceType;
                 validationAttribute.ErrorMessageResourceName = ErrorMessageResourceName;
             }
-            else if (ConventionSettings.ConventionsActive)
+            else if (ConventionSettings.EnableConventions)
             {
                 // enables support for partial matadata
                 if (ErrorMessageResourceType != null)
